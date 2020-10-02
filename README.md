@@ -1,29 +1,10 @@
-# README #
+# Todo App
 
-This README would normally document whatever steps are necessary to get your application up and running.
-
-### What is this repository for? ###
-
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
+API for managing todo tasks built with ASP.NET core. 
+Has support for cookie and JWT bearer authorization and can be integrated with an open-id enabled authorization server. 
+Has endpoints (with csrf protection) for SPAs, native clients and servers.
+Employs best practices such as SOLID and onion architecture.
 
 ### Who do I talk to? ###
 
-* Repo owner or admin
-* Other community or team contact
+*  [Muyiwa Awoniyi](mailto:muyiwaawoniyi@yahoo.com)
