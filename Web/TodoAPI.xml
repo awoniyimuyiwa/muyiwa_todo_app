@@ -1,0 +1,853 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Web</name>
+    </assembly>
+    <members>
+        <member name="T:Web.Auth.CustomAuthorizationPolicyProvider">
+            <summary>
+            Custom policy provider
+            </summary>
+        </member>
+        <member name="M:Web.Auth.PermissionAuthorizationHandler.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext,Web.Auth.PermissionRequirement)">
+            <summary>
+            This handler has support for both cookie and bearer authentication schemes.        
+            </summary>
+            <param name="authorizationHandlerContext"></param>
+            <param name="requirement"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Web.Auth.ScopeAuthorizationHandler.HandleRequirementAsync(Microsoft.AspNetCore.Authorization.AuthorizationHandlerContext,Web.Auth.ScopeRequirement)">
+            <summary>
+            This handler has support for both cookie and bearer authentication schemes.
+            
+            When cookie authentication scheme is used, only the id_token recieved from the IDP is used to create the authenticated user and its claims.
+            id_token has only a sub claim to identify a user. 
+            To get the client scope claim an accesss_token is required and has to be fetched separately.
+            </summary>
+            <param name="authorizationHandlerContext"></param>
+            <param name="requirement"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Web.Controllers.API.v1.Admin.Native.IdentityController">
+            <summary>
+            Handles identity requests from non-browser native clients that can securely store access tokens 
+            for users with admin permissions (assigned to them on the identity server) for this API, 
+            </summary>
+            <remarks>
+            The endpoints on this contoller use the bearer authentication scheme and no csrf protection. 
+            </remarks>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Admin.Native.IdentityController.#ctor(Web.Services.Abstracts.IOidcUserInfoService)">
+            <summary>
+            Initializes fields
+            </summary>
+            <param name="oidcUserInfoService"></param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Admin.Native.IdentityController.Get">
+            <summary>
+            Returns a list of the currently authenticated user's claims.
+            </summary>
+            <response code="200">When there are no errors</response>
+            <response code="401">When authentication fails</response>
+        </member>
+        <member name="T:Web.Controllers.API.v1.Admin.Native.TodoItemsController">
+            <summary>
+            Handles todo-item requests from non-browser native clients that can securely store access tokens 
+            for users with admin permissions (assigned to them on the identity server) for this API, 
+            </summary>
+            <remarks>
+            The endpoints on this contoller use the bearer authentication scheme and no csrf protection. 
+            </remarks>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Admin.Native.TodoItemsController.#ctor(Application.Services.Abstracts.ITodoItemService)">
+            <summary>
+            Initializes fields
+            </summary>
+            <param name="todoItemService"></param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Admin.Native.TodoItemsController.Index(System.String,System.Int32,System.Int32,System.String)">
+            <summary>Returns list of todo-items</summary>
+            <param name="search">The search string</param>
+            <param name="page">The page number</param>
+            <param name="pageSize">The maximum number of items per page</param>
+            <param name="dateRangeString">String in the format: dd MMMM yyyy-dd MMMM yyyy</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">When validation of any of the query string parameters fails</response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When none of the permission claim for the user has value: "View TodoItem"</response> 
+        </member>
+        <member name="M:Web.Controllers.API.v1.Admin.Native.TodoItemsController.View(System.String)">
+            <summary>Returns details of a todo-item</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+            <response code="200">When there are no errors</response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When none of the permission claim for the user has value: "View TodoItem"</response>
+            <response code="404">When a todo-item with the slug specified doesn't exist</response>       
+        </member>
+        <member name="T:Web.Controllers.API.v1.Admin.TodoItemsController">
+            <summary>
+            Handles todo-item requests from browser based clients/single page applications
+            for users with admin permissions (assigned to them on the identity server) for this API, 
+            </summary>
+            <remarks>
+            Endpoints exposed by this controller use cookie authentication scheme.
+            Endpoints are protected from CSRF because they are intended for use from "web browsers" 
+            where a stored access token is vunerable to theft by XSS and cookies can be exploited by CSRF. 
+            </remarks>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Admin.TodoItemsController.#ctor(Application.Services.Abstracts.ITodoItemService)">
+            <summary>
+            Initializes fields
+            </summary>
+            <param name="todoItemService"></param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Admin.TodoItemsController.Index(System.String,System.Int32,System.Int32,System.String)">
+            <summary>Returns list of todo-items</summary>
+            <param name="search">The search string</param>
+            <param name="page">The page number</param>
+            <param name="pageSize">The maximum number of items per page</param>
+            <param name="dateRangeString">String in the format: dd MMMM yyyy-dd MMMM yyyy</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">
+            1) When csrf token validation fails
+            2) When validation of any of the query string parameters fails
+            </response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When none of the permission claim for the user has value: "View TodoItem"</response>
+            <remarks>
+            This endpoint has CSRF protection because it uses cookie based authentication and is expected to be accessed from web browsers. 
+            Visit /auth/login to authenticate
+            </remarks>        
+        </member>
+        <member name="M:Web.Controllers.API.v1.Admin.TodoItemsController.View(System.String)">
+            <summary>Returns details of a todo-item</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">When csrf token validation fails</response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When none of the permission claim for the user has value: "View TodoItem"</response>
+            <response code="404">When a todo-item with the slug specified doesn't exist</response> 
+            <remarks>
+            This endpoint has CSRF protection because it uses cookie based authentication and is expected to be accessed from web browsers. 
+            Visit /auth/login to authenticate
+            </remarks>        
+        </member>
+        <member name="T:Web.Controllers.API.v1.Admin.TodoItemsControllerBase">
+            <summary>
+            Base class for admin TodoItemControllers
+            </summary>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Admin.TodoItemsControllerBase.#ctor(Application.Services.Abstracts.ITodoItemService)">
+            <summary>
+            Initializes fields
+            </summary>
+            <param name="todoItemService"></param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Admin.TodoItemsControllerBase.DoIndex(System.String,System.Int32,System.Int32,System.String)">
+            <summary>
+            Returns list of todo-items
+            </summary>
+            <param name="search"></param>
+            <param name="page"></param>
+            <param name="pageSize"></param>
+            <param name="dateRangeString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Admin.TodoItemsControllerBase.DoView(System.String)">
+            <summary>Returns details of a todo-item</summary>
+        </member>
+        <member name="T:Web.Controllers.API.v1.IdentityController">
+            <summary>
+            Handles identity requests from browser based clients/single page applications
+            </summary>
+            <remarks> 
+            Endpoints exposed by this controller use cookie authentication scheme
+            </remarks>
+        </member>
+        <member name="M:Web.Controllers.API.v1.IdentityController.#ctor(Web.Services.Abstracts.IOidcUserInfoService,Microsoft.AspNetCore.Antiforgery.IAntiforgery)">
+            <summary>
+            Initializes fields
+            </summary>
+            <param name="oidcUserInfoService"></param>
+            <param name="antiforgery"></param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.IdentityController.Get">
+            <summary>
+            Returns a list of the currently authenticated user's claims.
+            </summary>
+            <response code="200">When there are no errors</response>
+            <response code="401">When authentication fails</response>
+            <remarks>
+            1) SPAs should have an in memory state they check first upon launching to see if the users's claims are in memory.
+            If the claims are not yet in memory, SPAs should immediately call this endpoint to retrieve the user's claims.
+            
+            2) When SPAs get a 401 response from this endpoint or any other endpoint, 
+            they should immediately redirect the browser to /auth/login while passing along an optional redirect_uri query string parameter. 
+            After the user authenticates, the user's browser will be redirected to the SPA and the SPA should repeat step 1.
+            
+            3) When SPAs get a 200 response from this endpoint, they should save the json repsonse containing the claims in memory
+            and set an in memory boolean that indicates that the user is authenticated.  
+            
+            4) SPAs should redirect to /auth/logout to terminate a user's session 
+            </remarks>
+        </member>
+        <member name="T:Web.Controllers.API.v1.Native.IdentityController">
+            <summary>
+            For handling identity requests for users from non-browser devices
+            </summary>
+            <remarks>
+            The endpoints on this contoller use the bearer authentication scheme and no csrf protection. 
+            </remarks>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Native.IdentityController.#ctor(Web.Services.Abstracts.IOidcUserInfoService)">
+            <summary>
+            Initializes fields
+            </summary>
+            <param name="oidcUserInfoService"></param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Native.IdentityController.Get">
+            <summary>
+            Returns a list of the currently authenticated user's claims.
+            </summary>
+            <response code="200">When there are no errors</response>
+            <response code="401">When authentication fails</response>
+        </member>
+        <member name="T:Web.Controllers.API.v1.Native.TodoItemsController">
+            <summary>
+            Handles todo-item requests for a user from non-browser native clients that can securely store access tokens
+            </summary>
+            <remarks>
+            The endpoints on this contoller use the bearer authentication scheme and no csrf protection. 
+            </remarks>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Native.TodoItemsController.#ctor(Application.Services.Abstracts.ITodoItemService,Application.Services.Abstracts.IUserService,Microsoft.Extensions.Logging.ILogger{Web.Controllers.API.v1.Native.TodoItemsController},Microsoft.Extensions.Localization.IStringLocalizer{Web.Status},Microsoft.Extensions.Localization.IStringLocalizer{Web.Validation})">
+            <summary>
+            Initializes fields
+            </summary>
+            <param name="todoItemService"></param>
+            <param name="userService"></param>
+            <param name="logger"></param>
+            <param name="statusMessageLocalizer"></param>
+            <param name="validationMessageLocalizer"></param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Native.TodoItemsController.NativeIndex(System.String,System.Int32,System.Int32,System.String)">
+            <summary>Returns list of todo-items</summary>
+            <param name="search">The search string</param>
+            <param name="page">The page number</param>
+            <param name="pageSize">The maximum number of items per page</param>
+            <param name="dateRangeString">String in the format: dd MMMM yyyy-dd MMMM yyyy</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">
+            1) When no user is indicated via the accesss token 
+            2) When validation of any of the query string parameters fails
+            </response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have read.todoitem scope</response>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Native.TodoItemsController.Create(Web.ViewModels.Transient.v1.TodoItemViewModel)">
+            <summary>Creates a new todo-item</summary>
+            <param name="viewModel">The model for accepting form input and on which validation will be done</param>        
+            <response code="201">When there are no errors</response>
+            <response code="400">
+            1) When no user is indicated via the accesss token 
+            2) When input validation fails
+            </response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have write.todoitem scope</response>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Native.TodoItemsController.View(System.String)">
+            <summary>Returns details of a todo-item</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">When no user is indicated via the accesss token</response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have read.todoitem scope</response>        
+            <response code="404">When the user indicated via the access token doesn't have a todo-item with the slug specified</response>        
+        </member>
+        <member name="M:Web.Controllers.API.v1.Native.TodoItemsController.Update(System.String,Web.ViewModels.Transient.v1.TodoItemViewModel)">
+            <summary>Updates a todo-item</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+            <param name="viewModel">The model for accepting form input and on which validation will be done</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">
+            1) When no user is indicated via the accesss token
+            2) When input validation fails
+            </response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have write.todoitem scope</response>        
+            <response code="404">When the user indicated via the access token doesn't have a todo-item with the slug specified</response>        
+        </member>
+        <member name="M:Web.Controllers.API.v1.Native.TodoItemsController.MarkAsCompleted(System.String)">
+            <summary>Marks a todo-item as completed</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">When no user is indicated via the accesss token</response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have write.todoitem scope</response>        
+            <response code="404">When the user indicated via the access token doesn't have a todo-item with the slug specified</response>        
+        </member>
+        <member name="M:Web.Controllers.API.v1.Native.TodoItemsController.MarkAsUncompleted(System.String)">
+            <summary>Marks a todo-item as un-completed</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">When no user is indicated via the accesss token</response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have write.todoitem scope</response>        
+            <response code="404">When the user indicated via the access token doesn't have a todo-item with the slug specified</response>        
+        </member>
+        <member name="M:Web.Controllers.API.v1.Native.TodoItemsController.Delete(System.String)">
+            <summary>Deletes a todo-item</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">When no user is indicated via the accesss token</response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have delete.todoitem scope</response>        
+            <response code="404">When the user indicated via the access token doesn't have a todo-item with the slug specified</response>        
+        </member>
+        <member name="T:Web.Controllers.API.v1.TodoItemsController">
+            <summary>
+            Handles todo-item requests from browser based clients/single page applications
+            </summary>
+            <remarks> 
+            Endpoints exposed by this controller use cookie authentication scheme.
+            Endpoints are protected from CSRF because they are intended for use from a "web browser"
+            where a stored access token is vulnerable to theft via XSS and cookies can be exploited by CSRF. 
+            </remarks>
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsController.#ctor(Application.Services.Abstracts.ITodoItemService,Application.Services.Abstracts.IUserService,Microsoft.Extensions.Logging.ILogger{Web.Controllers.API.v1.TodoItemsController},Microsoft.Extensions.Localization.IStringLocalizer{Web.Status},Microsoft.Extensions.Localization.IStringLocalizer{Web.Validation})">
+            <summary>
+            Initializes fields
+            </summary>
+            <param name="todoItemService"></param>
+            <param name="userService"></param>
+            <param name="logger"></param>
+            <param name="statusMessageLocalizer"></param>
+            <param name="validationMessageLocalizer"></param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsController.Index(System.String,System.Int32,System.Int32,System.String)">
+            <summary>Returns list of todo-items</summary>
+            <param name="search">The search string</param>
+            <param name="page">The page number</param>
+            <param name="pageSize">The maximum number of items per page</param>
+            <param name="dateRangeString">String in the format: dd MMMM yyyy-dd MMMM yyyy</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">
+            1) When csrf token validation fails
+            2) When no user is indicated via the accesss token 
+            3) When input validation fails
+            </response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have read.todoitem scope</response>
+            <remarks>
+            This endpoint has CSRF protection because it uses cookie based authentication and is expected to be accessed from web browsers. 
+            Visit /auth/login to authenticate
+            </remarks>        
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsController.Create(Web.ViewModels.Transient.v1.TodoItemViewModel)">
+            <summary>Creates a new todo-item</summary>
+            <param name="viewModel">The model for accepting form input and on which validation will be done</param>
+            <response code="201">When there are no errors</response>
+            <response code="400">
+            1) When csrf token validation fails
+            2) When no user is indicated via the accesss token 
+            3) When input validation fails
+            </response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have write.todoitem scope</response>
+            <remarks>
+            This endpoint has CSRF protection because it uses cookie based authentication and is expected to be accessed from web browsers. 
+            Visit /auth/login to authenticate.
+            </remarks>        
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsController.View(System.String)">
+            <summary>Returns details of a todo-item</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">
+            1) When csrf token validation fails
+            2) When no user is indicated via the accesss token 
+            3) When input validation fails
+            </response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have the read.todoitem scope</response>        
+            <response code="404">When the user indicated via the access token doesn't have a todo-item with the slug specified</response>        
+            <remarks>
+            This endpoint has CSRF protection because it uses cookie based authentication and is expected to be accessed from web browsers. 
+            Visit /auth/login to authenticate
+            </remarks>
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsController.Update(System.String,Web.ViewModels.Transient.v1.TodoItemViewModel)">
+            <summary>Updates a todo-item</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+            <param name="viewModel">The model for accepting form input and on which validation will be done</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">
+            1) When csrf token validation fails
+            2) When no user is indicated via the accesss token 
+            3) When input validation fails
+            </response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have write.todoitem scope</response>        
+            <response code="404">When the user indicated via the access token doesn't have a todo-item with the slug specified</response>        
+            <remarks>
+            This endpoint has CSRF protection because it uses cookie based authentication and is expected to be accessed from web browsers. 
+            Visit /auth/login to authenticate
+            </remarks>       
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsController.MarkAsCompleted(System.String)">
+            <summary>Marks a todo-item as completed</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">
+            1) When csrf token validation fails
+            2) When no user is indicated via the accesss token 
+            3) When input validation fails
+            </response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have write.todoitem scope</response>        
+            <response code="404">When the user indicated via the access token doesn't have a todo-item with the slug specified</response>        
+            <remarks>
+            This endpoint has CSRF protection because it uses cookie based authentication and is expected to be accessed from web browsers. 
+            Visit /auth/login to authenticate
+            </remarks>        
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsController.MarkAsUncompleted(System.String)">
+            <summary>Marks a todo-item as un-completed</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">
+            1) When csrf token validation fails
+            2) When no user is indicated via the accesss token 
+            3) When input validation fails
+            </response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have write.todoitem scope</response>        
+            <response code="404">When the user indicated via the access token doesn't have a todo-item with the slug specified</response>        
+            <remarks>
+            This endpoint has CSRF protection because it uses cookie based authentication and is expected to be accessed from web browsers. 
+            Visit /auth/login to authenticate
+            </remarks>        
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsController.Delete(System.String)">
+            <summary>Deletes a todo-item</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">
+            1) When csrf token validation fails
+            2) When no user is indicated via the accesss token 
+            3) When input validation fails
+            </response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have delete.todoitem scope</response>        
+            <response code="404">When the user indicated via the access token doesn't have a todo-item with the slug specified</response>        
+            <remarks>
+            This endpoint has CSRF protection because it uses cookie based authentication and is expected to be accessed from web browsers. 
+            Visit /auth/login to authenticate
+            </remarks>        
+        </member>
+        <member name="T:Web.Controllers.API.v1.TodoItemsControllerBase">
+            <summary>
+            Base class for todo-item controllers
+            </summary>
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsControllerBase.#ctor(Application.Services.Abstracts.ITodoItemService,Application.Services.Abstracts.IUserService,Microsoft.Extensions.Logging.ILogger{Web.Controllers.API.v1.TodoItemsControllerBase},Microsoft.Extensions.Localization.IStringLocalizer{Web.Status},Microsoft.Extensions.Localization.IStringLocalizer{Web.Validation})">
+            <summary>
+            Initializes fields
+            </summary>
+            <param name="todoItemService"></param>
+            <param name="userService"></param>
+            <param name="logger"></param>
+            <param name="statusMessageLocalizer"></param>
+            <param name="validationMessageLocalizer"></param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsControllerBase.DoIndex(System.String,System.Int32,System.Int32,System.String)">
+            <summary>
+            Returns list of todo-items
+            </summary>
+            <param name="search"></param>
+            <param name="page"></param>
+            <param name="pageSize"></param>
+            <param name="dateRangeString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsControllerBase.DoCreate(Web.ViewModels.Transient.v1.TodoItemViewModel,System.String)">
+            <summary>Creates a new todo-item</summary>
+            <param name="viewModel">The view model for accepting form input and on which validation will be done</param>
+            <param name="createdUrlPath"></param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsControllerBase.DoView(System.String)">
+            <summary>Returns details of a todo-item</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsControllerBase.DoUpdate(System.String,Web.ViewModels.Transient.v1.TodoItemViewModel)">
+            <summary>Updates a todo-item</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+            <param name="viewModel">The view model for accepting form input and on which validation will be done</param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsControllerBase.DoMarkAsCompleted(System.String)">
+            <summary>Marks a todo-item as completed</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsControllerBase.DoMarkAsUncompleted(System.String)">
+            <summary>Marks a todo-item as un-completed</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsControllerBase.DoDelete(System.String)">
+            <summary>Deletes a todo-item</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.TodoItemsControllerBase.Validate(Web.ViewModels.Transient.v1.TodoItemViewModel,System.Int32,System.String)">
+            <summary>
+            Validates a TodoItemViewModel asynchronously 
+            </summary>
+            <param name="viewModel"></param>
+            <param name="userId"></param>
+            <param name="slug"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Web.Controllers.API.v1.Worker.TodoItemsController">
+            <summary>
+            Handles todo-item requests for administrative tasks 
+            from non browser based clients like background workers on other servers
+            </summary>
+            <remarks>
+            The endpoints on this contoller use the bearer authentication scheme and no csrf protection. 
+            </remarks>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Worker.TodoItemsController.#ctor(Application.Services.Abstracts.ITodoItemService)">
+            <summary>
+            Initializes fields
+            </summary>
+            <param name="todoItemService"></param>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Worker.TodoItemsController.Index(System.String,System.Int32,System.Int32,System.String)">
+            <summary>Returns list of todo-items</summary>
+            <param name="search">The search string</param>
+            <param name="page">The page number</param>
+            <param name="pageSize">The maximum number of items per page</param>
+            <param name="dateRangeString">String in the format: dd MMMM yyyy-dd MMMM yyyy</param>
+            <response code="200">When there are no errors</response>
+            <response code="400">When validation of any of the query string parameters fails</response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have worker.todoitem scope</response>
+        </member>
+        <member name="M:Web.Controllers.API.v1.Worker.TodoItemsController.View(System.String)">
+            <summary>Returns details of a todo-item</summary>
+            <param name="slug">Slug for identifying the todo-item</param>
+            <response code="200">When there are no errors</response>
+            <response code="401">When authentication fails</response>
+            <response code="403">When the access token doesn't have worker.todoitem scope</response>
+            <response code="404">When a todo-item with the slug specified doesn't exist</response>        
+        </member>
+        <member name="T:Web.Controllers.AuthController">
+            <summary>
+            Handles OIDC authentication for SPAs or web apps
+            </summary>
+        </member>
+        <member name="M:Web.Controllers.AuthController.Login(System.String)">
+            <summary>
+            Initializes authentication for a user
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Web.Controllers.AuthController.GetLogout(System.String)">
+            <summary>
+            Confirms termination of an authenticated user's session
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Web.Controllers.AuthController.PostLogout(System.String)">
+            <summary>
+            Terminates an authenticated user's session
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Web.Exceptions.DateRangeValidationException">
+            <summary>
+            Thrown when a date range string is not in the format: dd month yyyy - dd month yyyy
+            </summary>
+        </member>
+        <member name="P:Web.Exceptions.DateRangeValidationException.FieldName">
+            <summary>
+            The name of the field being validated
+            </summary>
+        </member>
+        <member name="M:Web.Exceptions.DateRangeValidationException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes fields
+            </summary>
+            <param name="fieldName"></param>
+            <param name="innerException"></param>
+        </member>
+        <member name="T:Web.Extensions.ContollerExtensions">
+            <summary>
+            Extension methods for controllers
+            </summary>
+        </member>
+        <member name="M:Web.Extensions.ContollerExtensions.GetLocalUser(Microsoft.AspNetCore.Mvc.ControllerBase,Application.Services.Abstracts.IUserService)">
+            <summary>
+            Retrieve local user
+            </summary>
+            <param name="controller"></param>
+            <param name="userService"></param>
+            <returns>User if it exists</returns>
+            <exception cref="T:Application.Exceptions.UserNotFoundException">Thrown when user cannot be found or created</exception>
+        </member>
+        <member name="T:Web.Extensions.IApplicationBuilderExtensions">
+            <summary>
+            IApplicationBuilder extensions
+            </summary>
+        </member>
+        <member name="M:Web.Extensions.IApplicationBuilderExtensions.UseCustomExceptionHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+             Set up global exception handling for the app using a middleware
+            </summary>
+            <param name="appBuilder"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Web.Extensions.IServiceCollectionExtensions">
+            <summary>
+            IServiceCollectionExtensions
+            </summary>
+        </member>
+        <member name="M:Web.Extensions.IServiceCollectionExtensions.AddCookieOptions(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            And and configure cookie settings for the app
+            </summary>
+            <param name="services"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Web.Extensions.IServiceCollectionExtensions.AddCustomAuthentication(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Add and configure authentication services for the app
+            </summary>
+            <param name="services"></param>
+            <param name="configuration"></param>
+        </member>
+        <member name="M:Web.Extensions.IServiceCollectionExtensions.AddCustomAuthorization(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Add and configure authorization services for the app
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:Web.Extensions.IServiceCollectionExtensions.AddCustomLocalization(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+            Add and configure localization services for the app
+            </summary>
+            <param name="services"></param>
+            <param name="cultureCookieName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Web.Extensions.IServiceCollectionExtensions.AddHttpClients(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Add and configure http clients for the app
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:Web.Extensions.IServiceCollectionExtensions.AddCustomSwaggerGen(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Add and configure swagger services for the app
+            </summary>
+            <param name="services"></param>
+            <param name="configuration"></param>
+        </member>
+        <member name="T:Web.MiddleWares.ExceptionHandlerMiddleware">
+            <summary>
+            Middleware for global exception handling
+            </summary>
+        </member>
+        <member name="M:Web.MiddleWares.ExceptionHandlerMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Localization.IStringLocalizer{Web.Error},Microsoft.Extensions.Logging.ILogger{Web.MiddleWares.ExceptionHandlerMiddleware})">
+            <summary>
+            Class constructor
+            </summary>
+            <param name="next"></param>
+            <param name="errorMessageLocalizer"></param>
+            <param name="logger"></param>
+        </member>
+        <member name="M:Web.MiddleWares.ExceptionHandlerMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Invokes the specified context.
+            </summary>
+            <param name="context">The context to invoke.</param>
+            <returns>Task</returns>
+        </member>
+        <member name="M:Web.MiddleWares.ExceptionHandlerMiddleware.GetProblemDetails(System.Exception)">
+            <summary>
+            Maps exception to ProblemDetails
+            </summary>
+            <param name="exception"></param>
+            <returns>ProblemDetails</returns>
+        </member>
+        <member name="T:Web.Program">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Web.Program.Main(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Web.Program.CreateHostBuilder(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Web.Error">
+            <summary>
+            Dummy class for resource: Error.{locale}.resx
+            </summary>
+            <remarks> 
+            Namespace must be the root namespace of the assembly
+            </remarks>
+        </member>
+        <member name="T:Web.Misc">
+            <summary>
+            Dummy class for resource: Misc.{locale}.resx where miscellaneous 
+            strings that don't belong to any category are stored
+            </summary>
+            <remarks> 
+            Namespace must be the root namespace of the assembly
+            </remarks>
+        </member>
+        <member name="T:Web.Status">
+            <summary>
+            Dummy class for resource: Status.{locale}.resx
+            </summary>
+            <remarks> 
+            Namespace must be the root namespace of the assembly
+            </remarks>
+        </member>
+        <member name="T:Web.Validation">
+            <summary>
+            Dummy class for resource: Validation.{locale}.resx
+            </summary>
+            <remarks> 
+            Namespace must be the root namespace of the assembly
+            </remarks>
+        </member>
+        <member name="T:Web.Services.Abstracts.IOidcUserInfoService">
+            <summary>
+            User info service interface
+            </summary>
+        </member>
+        <member name="M:Web.Services.Abstracts.IOidcUserInfoService.GetClaims(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Returns a list of the currently authenticated user's claims from the idp
+            </summary>
+            <param name="accessToken"></param>
+            <param name="cancellationToken"></param>
+            <returns>claims</returns>
+        </member>
+        <member name="M:Web.Services.Abstracts.IOidcUserInfoService.GetUserName(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Returns a string that can be used as the authenticated user's name
+            </summary>
+            <param name="accessToken"></param>
+            <param name="cancellationToken"></param>
+            <returns>claims</returns>
+        </member>
+        <member name="T:Web.Services.OidcUserInfoService">
+            <summary>
+            HttpClient for fetching user details from Identity/Auth server using oidc protocol
+            </summary>
+        </member>
+        <member name="T:Web.Startup">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Web.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            
+            </summary>
+            <param name="configuration"></param>
+        </member>
+        <member name="P:Web.Startup.Configuration">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:Web.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            This method gets called by the runtime. Use this method to add services to the container.
+        </member>
+        <member name="M:Web.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        </member>
+        <member name="T:Web.ViewModels.LayoutViewModel">
+            <summary>
+            Data for page layouts
+            </summary>
+        </member>
+        <member name="P:Web.ViewModels.LayoutViewModel.AppName">
+            <summary>App Name</summary>
+        </member>
+        <member name="P:Web.ViewModels.LayoutViewModel.Title">
+            <summary>Title</summary>
+        </member>
+        <member name="P:Web.ViewModels.LayoutViewModel.IsUserAuthenticated">
+            <summary>Indicates if the page is being displayed for an authenticated user or not</summary>
+        </member>
+        <member name="P:Web.ViewModels.LayoutViewModel.UserName">
+            <summary>Name of the currently authenticated user</summary>
+        </member>
+        <member name="T:Web.ViewModels.LayoutViewModel`1">
+            <summary>
+            Generic version of LayoutViewModel
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:Web.ViewModels.LayoutViewModel`1.PageViewModel">
+            <summary>View model for the page</summary>
+        </member>
+        <member name="M:Web.ViewModels.LayoutViewModel`1.Initialize(`0,System.String,Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Initializes properties
+            </summary>
+            <param name="pageViewModel"></param>
+            <param name="title"></param>
+            <param name="httpContext"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Web.ViewModels.LogoutViewModel">
+            <summary>
+            Model for Logout View
+            </summary>
+        </member>
+        <member name="P:Web.ViewModels.LogoutViewModel.RedirectUri">
+            <summary>Where to redirect to after logout</summary>
+        </member>
+        <member name="T:Web.ViewModels.Transient.v1.TodoItemViewModel">
+            <summary>
+            For receieving user input for a todo-item   
+            </summary>
+        </member>
+        <member name="P:Web.ViewModels.Transient.v1.TodoItemViewModel.Name">
+            <summary>
+            The Name for the todo-item
+            </summary>
+        </member>
+        <member name="M:Web.ViewModels.Transient.v1.TodoItemViewModel.ToDto">
+            <summary>
+            Converts to a TodoItemDto
+            </summary>
+        </member>
+        <member name="T:Web.ViewModels.Transient.v1.TodoItemViewModelValidator">
+            <summary>
+            Fluent validation for TodoItemViewModel
+            </summary>
+        </member>
+        <member name="M:Web.ViewModels.Transient.v1.TodoItemViewModelValidator.#ctor(Application.Services.Abstracts.ITodoItemService,Microsoft.Extensions.Localization.IStringLocalizer{Web.Validation})">
+            <summary>
+            Contsructor for TodItemViewModelValidator
+            </summary>
+            <param name="todoItemService"></param>
+            <param name="validationMessageLocalizer"></param>
+        </member>
+    </members>
+</doc>

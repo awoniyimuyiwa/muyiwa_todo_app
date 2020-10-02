@@ -1,0 +1,3 @@
+apsettings.json
+appsettings.*.json
+!appsettings.example.json
