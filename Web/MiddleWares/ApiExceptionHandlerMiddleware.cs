@@ -15,11 +15,11 @@ namespace Web.MiddleWares
     /// <summary>
     /// Middleware for global exception handling
     /// </summary>
-    public class ExceptionHandlerMiddleware
+    public class ApiExceptionHandlerMiddleware
     {
         readonly RequestDelegate Next;
         readonly IStringLocalizer<Error> ErrorMessageLocalizer;
-        readonly ILogger<ExceptionHandlerMiddleware> Logger;
+        readonly ILogger<ApiExceptionHandlerMiddleware> Logger;
 
         /// <summary>
         /// Class constructor
@@ -27,10 +27,10 @@ namespace Web.MiddleWares
         /// <param name="next"></param>
         /// <param name="errorMessageLocalizer"></param>
         /// <param name="logger"></param>
-        public ExceptionHandlerMiddleware(
+        public ApiExceptionHandlerMiddleware(
             RequestDelegate next, 
             IStringLocalizer<Error> errorMessageLocalizer,
-            ILogger<ExceptionHandlerMiddleware> logger)
+            ILogger<ApiExceptionHandlerMiddleware> logger)
         {
             Next = next;           
             ErrorMessageLocalizer = errorMessageLocalizer;

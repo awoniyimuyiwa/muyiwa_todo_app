@@ -105,18 +105,35 @@ namespace Web
         {
             app.UseForwardedHeaders()
                .UseHttpsRedirection()
+               .UseHsts()
                .UseCookiePolicy()
                .UseRequestLocalization(app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage()
-                    .UseInfrastructureDatabaseErrorPage();
+                app.UseWhen(context => !context.Request.Path.StartsWithSegments("/api"), appBuilder =>
+                {
+                    appBuilder.UseDeveloperExceptionPage()
+                    .UseInfrastructureDatabaseErrorPage()
+                    .UseStatusCodePagesWithReExecute("/status-code", "?code={0}");
+                });
+            } 
+            else
+            {
+                app.UseWhen(context => !context.Request.Path.StartsWithSegments("/api"), appBuilder =>
+                {
+                    appBuilder.UseExceptionHandler("/status-code")
+                    .UseStatusCodePagesWithReExecute("/status-code", "?code={0}");
+                });
             }
 
-            app.UseCustomExceptionHandler()
+            app.UseWhen(context => context.Request.Path.StartsWithSegments("/api"), appBuilder =>
+            {
+                appBuilder.UseCustomApiExceptionHandler();
+            });
+
+            app.UseStaticFiles()
                .UseRouting()
-               .UseStaticFiles()
                .UseAuthentication()
                .UseAuthorization()
                .UseEndpoints(endpoints =>

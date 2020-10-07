@@ -48,19 +48,20 @@ namespace Web.Services
 
             var claims = await GetClaims(accessToken, cancellationToken);
 
-            var givenNameClaim = claims.First(c => c.Type == JwtClaimTypes.GivenName);
+            var givenNameClaim = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.GivenName);
             if (givenNameClaim != null) { userName = givenNameClaim.Value; }
 
-            var familyNameClaim = claims.First(c => c.Type == JwtClaimTypes.FamilyName);
+            var familyNameClaim = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.FamilyName);
             if (familyNameClaim != null) { userName = $"{familyNameClaim.Value} {userName}"; }
 
-            if (userName == null)
+            if (string.IsNullOrWhiteSpace(userName))
             {
-                var fallBackUserNameClaim = claims.First(c => c.Type == JwtClaimTypes.MiddleName ||
+                var fallBackUserNameClaim = claims.FirstOrDefault(c => c.Type == JwtClaimTypes.MiddleName ||
                                             c.Type == JwtClaimTypes.Name ||
                                             c.Type == JwtClaimTypes.NickName ||
                                             c.Type == JwtClaimTypes.PreferredUserName);
-               userName = fallBackUserNameClaim.Value;
+
+                if (fallBackUserNameClaim != null) { userName = fallBackUserNameClaim.Value; }
             }
 
             return userName;

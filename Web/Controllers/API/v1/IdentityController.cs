@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Web.Services.Abstracts;
+using Web.Utils;
 
 namespace Web.Controllers.API.v1
 {
@@ -72,8 +73,9 @@ namespace Web.Controllers.API.v1
                                             claim.Type == JwtClaimTypes.MiddleName ||
                                             claim.Type == JwtClaimTypes.Name ||
                                             claim.Type == JwtClaimTypes.NickName ||
-                                            claim.Type == JwtClaimTypes.PreferredUserName
-                                            select new { claim.Type, claim.Value };
+                                            claim.Type == JwtClaimTypes.PreferredUserName ||
+                                            claim.Type == Constants.CustomClaimTypes.Permission
+                                         select new { claim.Type, claim.Value };
 
             // Call csrf service to generate and store csrf token in cookies if they don't already exist
             var tokens = Antiforgery.GetAndStoreTokens(HttpContext);

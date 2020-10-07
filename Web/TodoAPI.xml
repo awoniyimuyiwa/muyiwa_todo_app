@@ -599,7 +599,7 @@
             IApplicationBuilder extensions
             </summary>
         </member>
-        <member name="M:Web.Extensions.IApplicationBuilderExtensions.UseCustomExceptionHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+        <member name="M:Web.Extensions.IApplicationBuilderExtensions.UseCustomApiExceptionHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
              Set up global exception handling for the app using a middleware
             </summary>
@@ -652,12 +652,12 @@
             <param name="services"></param>
             <param name="configuration"></param>
         </member>
-        <member name="T:Web.MiddleWares.ExceptionHandlerMiddleware">
+        <member name="T:Web.MiddleWares.ApiExceptionHandlerMiddleware">
             <summary>
             Middleware for global exception handling
             </summary>
         </member>
-        <member name="M:Web.MiddleWares.ExceptionHandlerMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Localization.IStringLocalizer{Web.Error},Microsoft.Extensions.Logging.ILogger{Web.MiddleWares.ExceptionHandlerMiddleware})">
+        <member name="M:Web.MiddleWares.ApiExceptionHandlerMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Localization.IStringLocalizer{Web.Error},Microsoft.Extensions.Logging.ILogger{Web.MiddleWares.ApiExceptionHandlerMiddleware})">
             <summary>
             Class constructor
             </summary>
@@ -665,14 +665,14 @@
             <param name="errorMessageLocalizer"></param>
             <param name="logger"></param>
         </member>
-        <member name="M:Web.MiddleWares.ExceptionHandlerMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+        <member name="M:Web.MiddleWares.ApiExceptionHandlerMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
             Invokes the specified context.
             </summary>
             <param name="context">The context to invoke.</param>
             <returns>Task</returns>
         </member>
-        <member name="M:Web.MiddleWares.ExceptionHandlerMiddleware.GetProblemDetails(System.Exception)">
+        <member name="M:Web.MiddleWares.ApiExceptionHandlerMiddleware.GetProblemDetails(System.Exception)">
             <summary>
             Maps exception to ProblemDetails
             </summary>

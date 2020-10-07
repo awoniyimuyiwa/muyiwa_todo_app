@@ -15,9 +15,9 @@ namespace Web.Extensions
         /// </summary>
         /// <param name="appBuilder"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder appBuilder)
+        public static IApplicationBuilder UseCustomApiExceptionHandler(this IApplicationBuilder appBuilder)
         {
-            appBuilder.UseMiddleware<ExceptionHandlerMiddleware>();
+            appBuilder.UseMiddleware<ApiExceptionHandlerMiddleware>();
 
             return appBuilder;
         }

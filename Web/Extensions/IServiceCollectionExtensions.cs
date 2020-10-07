@@ -15,6 +15,7 @@ using System;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Threading.Tasks;
 using Web.Auth;
 using Web.Services;
 using Web.Services.Abstracts;
@@ -172,9 +173,10 @@ namespace Web.Extensions
                     options.SupportedUICultures = cultures;
                     options.RequestCultureProviders.OfType<CookieRequestCultureProvider>().First().CookieName = cultureCookieName;
 
-                    options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(async context =>
+                    options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(context =>
                     {
-                        return new ProviderCultureResult("en");
+                        var result = new ProviderCultureResult("en");
+                        return Task.FromResult(result);
                     }));
                 });
 
