@@ -16,7 +16,7 @@
 
 ```bash
 # run migrations
-$ dotnet ef database update  --startup-project ../Web/Web.csproj
+$ dotnet ef database update --startup-project ../Web/Web.csproj
 
 # serve at http://localhost:5002 and https://localhost:5003
 $ dotnet run --project ../Web/Web.csproj
