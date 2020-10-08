@@ -1,6 +1,6 @@
-# Todo App
+# Todo API
 
-> API for managing todo tasks built with ASP.NET core. 
+> API for managing todo tasks
 * Can be integrated with an openid enabled authorization server. 
 * Has api endpoints with cookie authentication and csrf protection for SPAs.
 * Has api endpoints with JWT bearer authorization and no csrf protection for native clients and servers.
