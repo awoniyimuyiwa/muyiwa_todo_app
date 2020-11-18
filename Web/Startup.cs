@@ -37,7 +37,10 @@ namespace Web
         /// This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApplicationServices(Configuration.GetConnectionString("DefaultConnection"))
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+
+            services.AddInfrastructureServices(connectionString)
+                .AddApplicationServices()
                 .AddCookieOptions()
                 .AddCustomAuthentication(Configuration)
                 .AddCustomAuthorization()
@@ -104,8 +107,6 @@ namespace Web
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseForwardedHeaders()
-               .UseHttpsRedirection()
-               .UseHsts()
                .UseCookiePolicy()
                .UseRequestLocalization(app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
@@ -114,13 +115,16 @@ namespace Web
                 app.UseWhen(context => !context.Request.Path.StartsWithSegments("/api"), appBuilder =>
                 {
                     appBuilder.UseDeveloperExceptionPage()
-                    .UseInfrastructureDatabaseErrorPage()
+                    .UseInfrastructureMigrationsEndPoint()
                     .UseStatusCodePagesWithReExecute("/status-code", "?code={0}");
                 });
             } 
             else
             {
-                app.UseWhen(context => !context.Request.Path.StartsWithSegments("/api"), appBuilder =>
+	// Use HTTP Strict Transport Security (HSTS) headers in response to browsers to tell them to only send requests over https. 
+	// The default value of MaxAge is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts()
+	.UseWhen(context => !context.Request.Path.StartsWithSegments("/api"), appBuilder =>
                 {
                     appBuilder.UseExceptionHandler("/status-code")
                     .UseStatusCodePagesWithReExecute("/status-code", "?code={0}");
@@ -132,7 +136,8 @@ namespace Web
                 appBuilder.UseCustomApiExceptionHandler();
             });
 
-            app.UseStaticFiles()
+            app.UseHttpsRedirection()
+               .UseStaticFiles()
                .UseRouting()
                .UseAuthentication()
                .UseAuthorization()

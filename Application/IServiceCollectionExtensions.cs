@@ -1,14 +1,11 @@
-﻿using Infrastructure.Extensions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Application
 {
     public static class IServiceCollectionExtensions
     {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            services.AddInfrastructureServices(connectionString);
-
             // One instance of a service class per request
             services.AddScoped<Services.Abstracts.IUserService, Services.UserService>();
             services.AddScoped<Services.Abstracts.ITodoItemService, Services.TodoItemService>();

@@ -12,9 +12,11 @@ namespace Infrastructure.Extensions
             
             // One instance of String generator per request (real random generators invoke heavy APIs BCryptGenRandom on Windows, OpenSSL on other platforms. That's why using interfaces which gives ability to mock them during test is important.
             services.AddScoped<Utils.Abstracts.IRandomStringGenerator, Utils.RandomStringGenerator>();
-
+            
             // One instance of UnitOfWork per request
             services.AddScoped<Data.Abstracts.IUnitOfWork, Data.EntityFrameworkCoreSqlServer.UnitOfWork>();
+
+            services.AddDatabaseDeveloperPageExceptionFilter();
 
             return services;
         }

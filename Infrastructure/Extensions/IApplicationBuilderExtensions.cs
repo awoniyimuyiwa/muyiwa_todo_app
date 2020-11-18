@@ -7,9 +7,9 @@ namespace Infrastructure.Extensions
     /// </summary>
     public static class IApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseInfrastructureDatabaseErrorPage(this IApplicationBuilder applicationBuilder)
+        public static IApplicationBuilder UseInfrastructureMigrationsEndPoint(this IApplicationBuilder applicationBuilder)
         {
-            return applicationBuilder.UseDatabaseErrorPage();
+            return applicationBuilder.UseMigrationsEndPoint();
         }
     }
 }
